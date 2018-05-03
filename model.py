@@ -181,6 +181,7 @@ def test():
 
 	model.eval()
 	
+	input_batch, label_batch = val_loader[0]
 	input_batch, label_batch = Variable(input_batch), Variable(label_batch)
 	if cuda_is_avail:
 		input_batch, label_batch = input_batch.cuda(), label_batch.cuda()
