@@ -106,6 +106,10 @@ val_dataset = YelpDataset(val_df)
 train_loader = DataLoader(train_dataset, batch_size=args.batch_size,
                         shuffle=True, num_workers=2)
 
+val_loader = DataLoader(val_dataset, batch_size=len(val_dataset),
+                        shuffle=True, num_workers=2)
+
+
 # val_img, val_label = val_loader[0]
 # val_img, val_label = Variable(val_img), Variable(val_label)
 
@@ -138,7 +142,7 @@ optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
 
 
 def train_epoch():
-	
+
 	model.train()
 	i = 0
 	loss_list = []
@@ -162,6 +166,8 @@ def train_epoch():
 		optimizer.step()
 		print("Training step " + str(i) + " " + str(loss.data[0]))
 		i += 1
+		if i == 10:
+			break
 		loss_list.append(loss)
 
 	total_loss = 0
@@ -171,9 +177,29 @@ def train_epoch():
 
 	return total_loss, loss_list
 
+def test():
+
+	model.eval()
+	
+	input_batch, label_batch = Variable(input_batch), Variable(label_batch)
+	if cuda_is_avail:
+		input_batch, label_batch = input_batch.cuda(), label_batch.cuda()
+	output_batch = model(input_batch)
+
+	if args.loss == "l1":
+		loss = F.l1_loss(output_batch.squeeze(), label_batch.squeeze())
+	elif args.loss == "mse":
+		loss = F.mse_loss(output_batch.squeeze(), label_batch.squeeze())
+	else:
+		print("Invalid loss function")
+		sys.exit(-1)
+
+	print("Val loss " + str(i) + " " + str(loss.data[0]))
+	return loss
 
 for module in model.children():
 	module.reset_parameters()
-	
-avg_loss, loss_list = train_epoch()
+
+train_loss, train_loss_list = train_epoch()
+val_loss = test()
 
