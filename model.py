@@ -10,6 +10,7 @@ from skimage.measure import block_reduce
 import numpy as np
 import torch
 import torch.utils.data
+from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
@@ -102,7 +103,7 @@ train_df = df.iloc[1000:11000]
 train_dataset = YelpDataset(train_df)
 val_dataset = YelpDataset(val_df)
 
-train_loader = dataloader = DataLoader(transformed_dataset, batch_size=args.batch_size,
+train_loader = DataLoader(transformed_dataset, batch_size=args.batch_size,
                         shuffle=True, num_workers=2)
 
 # val_img, val_label = val_loader[0]
