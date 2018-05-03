@@ -166,7 +166,7 @@ def train_epoch():
 			input_batch, label_batch = input_batch.cuda(), label_batch.cuda()
 		output_batch = model(input_batch)
 
-		loss = F.l1_loss(output_batch, label_batch)
+		loss = F.l1_loss(output_batch.squeeze(), label_batch)
 
 		optimizer.zero_grad()
 		loss.backward()
