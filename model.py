@@ -94,7 +94,6 @@ class YelpDataset(torch.utils.data.Dataset):
 # df = df.sample(frac=1)
 df = pd.read_csv(args.data_dir + "clean_data.csv").set_index("photo_id")
 df = df.sample(frac=1)
-print(df.head())
 
 train_df = df.iloc[0:int(len(df) * 0.7)]
 val_df = df.iloc[int(len(df) * 0.7):]
@@ -182,7 +181,7 @@ def train_epoch():
 
 def test():
 
-	model.eval()
+	model.train()
 	i = 0
 	loss_list = []
 	for input_batch, label_batch in val_loader:
