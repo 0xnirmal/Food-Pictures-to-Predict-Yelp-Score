@@ -110,7 +110,7 @@ train_loader = DataLoader(train_dataset, batch_size=args.batch_size,
                         shuffle=True, num_workers=2)
 
 val_loader = DataLoader(val_dataset, batch_size=256,
-                        shuffle=True, num_workers=0)
+                        shuffle=True, num_workers=2)
 
 
 # val_img, val_label = val_loader[0]
@@ -186,7 +186,7 @@ def test():
 	loss_list = []
 
 	for input_batch, label_batch in val_loader:
-		input_batch, label_batch = Variable(input_batch), Variable(label_batch)
+		input_batch, label_batch = Variable(input_batch, requires_grad=False), Variable(label_batch, requires_grad=False)
 		if cuda_is_avail:
 			input_batch, label_batch = input_batch.cuda(), label_batch.cuda()
 		output_batch = model(input_batch)
