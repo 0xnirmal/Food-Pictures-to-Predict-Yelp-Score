@@ -174,7 +174,7 @@ def train_epoch():
 		print("Training step " + str(i) + " " + str(loss.data[0]))
 		i += 1
 		loss_list.append(loss)
-		if i == 1000:
+		if i == 129:
 			break
 	
 	total_loss = 0
