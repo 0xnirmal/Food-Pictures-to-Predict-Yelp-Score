@@ -165,8 +165,8 @@ def train_epoch():
 		optimizer.zero_grad()
 		loss.backward()
 		optimizer.step()
-		print(str(i) + "," + str(loss.data.item()))
-		# print("Training step " + str(i) + ": " + str(loss.data.item()))
+		# print(str(i) + "," + str(loss.data.item()))
+		print("Training step " + str(i) + ": " + str(loss.data.item()))
 		i += 1
 		loss_list.append(loss)
 		if i == 3:
