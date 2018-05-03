@@ -212,7 +212,7 @@ def train_epoch():
 # 	return total_loss
 
 def test():
-	model.eval()
+	model.train()
 	i = 0
 	loss_list = []
 	for input_batch, label_batch in val_loader:
