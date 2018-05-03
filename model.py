@@ -109,7 +109,7 @@ val_dataset = YelpDataset(val_df)
 train_loader = DataLoader(train_dataset, batch_size=args.batch_size,
                         shuffle=True, num_workers=2)
 
-val_loader = DataLoader(val_dataset, batch_size=128, num_workers=2)
+val_loader = DataLoader(val_dataset, batch_size=10, num_workers=2)
 
 
 # val_img, val_label = val_loader[0]
@@ -192,8 +192,13 @@ def test():
 			input_batch, label_batch = input_batch.cuda(), label_batch.cuda()
 		output_batch = model(input_batch)
 
-		loss = torch.mean(torch.abs(output_batch.squeeze() - label_batch.squeeze()))
-
+		if args.loss == "l1":
+			loss = F.l1_loss(output_batch.squeeze(), label_batch.squeeze())
+		elif args.loss == "mse":
+			loss = F.mse_loss(output_batch.squeeze(), label_batch.squeeze())
+		else:
+			print("Invalid loss function")
+			sys.exit(-1)
 		
 		print(str(i) + "," + str(loss.data.item()))
 		# print("Training step " + str(i) + ": " + str(loss.data.item()))
