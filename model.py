@@ -165,8 +165,8 @@ def train_epoch():
 		optimizer.zero_grad()
 		loss.backward()
 		optimizer.step()
-		# print(str(i) + "," + str(loss.data.item()))
-		print("Training step " + str(i) + ": " + str(loss.data.item()))
+		print(str(i) + "," + str(loss.data.item()))
+		# print("Training step " + str(i) + ": " + str(loss.data.item()))
 		i += 1
 		loss_list.append(loss.data.item())
 		# del loss, input_batch, label_batch 
@@ -231,9 +231,6 @@ def test():
 			print("Invalid loss function")
 			sys.exit(-1)
 
-		# optimizer.zero_grad()
-		# # loss.backward()
-		# # optimizer.step()
 		print(str(i) + "," + str(loss.data.item()))
 		i += 1
 		loss_list.append(loss.data.item())
@@ -248,9 +245,20 @@ def test():
 for module in model.children():
 	module.reset_parameters()
 
-for i in range(args.epochs):
+train_loss_list = []
+val_loss_list = []
+
+for i in range(2):
 	print("Epoch " + str(i))
 	print("Training:")
-	train_loss, train_loss_list = train_epoch()
-	val_loss, val_loss_list = test()
+	train_loss, temp_train_loss_list = train_epoch()
+	train_loss_list.extend(temp_train_loss_list)
+	print("Validating...")
+	val_loss, _ = test()
+	val_loss_list.append(val_loss)
+
+print(train_loss_list)
+print(val_loss_list)
+
+
 
