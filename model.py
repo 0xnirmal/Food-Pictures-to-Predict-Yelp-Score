@@ -259,9 +259,9 @@ for i in range(args.epochs):
 
 print("Training:")
 for idx, val in enumerate(train_loss_list):
-	print(idx + "," + val)
+	print(str(idx) + "," + str(val))
 
 print("Validation:")
 for idx, val in enumerate(val_loss_list):
-	print(idx + "," + val)
+	print(str(idx) + "," + str(val))
 
