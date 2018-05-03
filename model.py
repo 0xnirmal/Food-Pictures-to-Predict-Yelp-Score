@@ -109,8 +109,7 @@ val_dataset = YelpDataset(val_df)
 train_loader = DataLoader(train_dataset, batch_size=args.batch_size,
                         shuffle=True, num_workers=2)
 
-val_loader = DataLoader(val_dataset, batch_size=256,
-                        shuffle=True, num_workers=2)
+val_loader = DataLoader(val_dataset, batch_size=128, num_workers=2)
 
 
 # val_img, val_label = val_loader[0]
