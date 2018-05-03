@@ -169,6 +169,7 @@ def train_epoch():
 		print("Training step " + str(i) + ": " + str(loss.data.item()))
 		i += 1
 		loss_list.append(loss)
+		del loss, input_batch, label_batch 
 		if i == 3:
 			break
 
