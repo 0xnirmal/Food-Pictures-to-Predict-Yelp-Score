@@ -97,7 +97,7 @@ df = df.sample(frac=1)
 # val_df = df.iloc[int(len(df) * 0.7):]
 
 val_df = df.iloc[0:3000]
-train_df = df.iloc[3000:11000]
+train_df = df.iloc[3000:10000]
 
 
 train_dataset = YelpDataset(train_df)
