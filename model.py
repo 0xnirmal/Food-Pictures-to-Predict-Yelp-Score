@@ -92,7 +92,7 @@ class YelpDataset(torch.utils.data.Dataset):
 # df = photo_df.copy(deep=True)
 # df["label"] = pd.Series(biz_df.loc[df["business_id"]]["stars"]).tolist()
 # df = df.sample(frac=1)
-df = pd.read_csv(args.data_dir + "clean_data.csv").set_index("photo_id")
+df = pd.read_csv(args.data_dir + "clean_data.csv")
 df = df.sample(frac=1)
 print(df.head())
 
