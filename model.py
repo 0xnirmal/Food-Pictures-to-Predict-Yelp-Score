@@ -212,12 +212,12 @@ def train_epoch():
 # 	return total_loss
 
 def test():
-	model.train()
+	model.eval()
 	i = 0
 	loss_list = []
 	for input_batch, label_batch in val_loader:
 	
-		input_batch, label_batch = Variable(input_batch), Variable(label_batch)
+		input_batch, label_batch = Variable(input_batch, volatile=True), Variable(label_batch, volatile=True)
 		if cuda_is_avail:
 			input_batch, label_batch = input_batch.cuda(), label_batch.cuda()
 		output_batch = model(input_batch)
@@ -230,13 +230,14 @@ def test():
 			print("Invalid loss function")
 			sys.exit(-1)
 
-		optimizer.zero_grad()
-		# loss.backward()
-		# optimizer.step()
+		# optimizer.zero_grad()
+		# # loss.backward()
+		# # optimizer.step()
 		print(str(i) + "," + str(loss.data.item()))
 		# print("Training step " + str(i) + ": " + str(loss.data.item()))
 		i += 1
 		loss_list.append(loss)
+		del loss, input_batch, label_batch 
 
 	total_loss = 0
 	for loss in loss_list:
