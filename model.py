@@ -39,8 +39,10 @@ parser.add_argument('--log_interval', type=int, default=100, metavar='I',
 							training status, 0 means never log """)
 parser.add_argument('--dataset', type=str, default='mnist', metavar='D',
 					help='Options are mnist and fashion_mnist')
-parser.add_argument('--data_dir', type=str, default='../data/', metavar='F',
+parser.add_argument('--data_dir', type=str, default='data/', metavar='F',
 					help='Where to put data')
+parser.add_argument('--photos_dir', type=str, default='../HDD/photos/', metavar='F',
+					help='Where to put photos')
 parser.add_argument('--name', type=str, default='', metavar='N',
 					help="""A name for this training run, this
 							affects the directory so use underscores and not spaces.""")
@@ -55,12 +57,13 @@ parser.add_argument('--dropout_rate', type=float, default=0.5)
 parser.add_argument("-f", "--jupyter-json")
 
 
+
 required = object()
 args = parser.parse_args()
 
 
 def get_photo_file(photo_name):
-	return "data/yelp_photos/photos/" + photo_name + ".jpg"
+	return args.photos_dir + photo_name + ".jpg"
 
 def resize_img(img):
 	return transform.resize(img, (224, 224))
@@ -85,8 +88,8 @@ class YelpDataset(torch.utils.data.Dataset):
 		label = self.df.iloc[idx:idx+self.batch_size].label.tolist()
 		return (torch.Tensor(images),torch.Tensor(label))
 
-biz_df = pd.read_csv("data/clean_business.csv").set_index("business_id")
-photo_df = pd.read_csv("data/clean_photo.csv").set_index("photo_id")
+biz_df = pd.read_csv(args.data_dir + "clean_business.csv").set_index("business_id")
+photo_df = pd.read_csv(args.data_dir + "clean_photo.csv").set_index("photo_id")
 df = photo_df.copy(deep=True)
 df["label"] = pd.Series(biz_df.loc[df["business_id"]]["stars"]).tolist()
 df = df.sample(frac=1)
