@@ -150,9 +150,9 @@ def train_epoch():
 		output_batch = model(input_batch)
 
 		if args.loss == "l1":
-			loss = F.l1_loss(output_batch.squeeze(), label_batch)
+			loss = F.l1_loss(output_batch.squeeze(), label_batch.squeeze())
 		elif args.loss == "mse":
-			loss = F.mse_loss(output_batch.squeeze(), label_batch)
+			loss = F.mse_loss(output_batch.squeeze(), label_batch.squeeze())
 		else:
 			print("Invalid loss function")
 			sys.exit(-1)
