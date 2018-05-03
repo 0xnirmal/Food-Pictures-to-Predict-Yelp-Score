@@ -180,20 +180,20 @@ def train_epoch():
 def test():
 
 	model.eval()
-	
-	input_batch, label_batch = val_loader[0]
-	input_batch, label_batch = Variable(input_batch), Variable(label_batch)
-	if cuda_is_avail:
-		input_batch, label_batch = input_batch.cuda(), label_batch.cuda()
-	output_batch = model(input_batch)
 
-	if args.loss == "l1":
-		loss = F.l1_loss(output_batch.squeeze(), label_batch.squeeze())
-	elif args.loss == "mse":
-		loss = F.mse_loss(output_batch.squeeze(), label_batch.squeeze())
-	else:
-		print("Invalid loss function")
-		sys.exit(-1)
+	for input_batch, label_batch in val_loader:
+		input_batch, label_batch = Variable(input_batch), Variable(label_batch)
+		if cuda_is_avail:
+			input_batch, label_batch = input_batch.cuda(), label_batch.cuda()
+		output_batch = model(input_batch)
+
+		if args.loss == "l1":
+			loss = F.l1_loss(output_batch.squeeze(), label_batch.squeeze())
+		elif args.loss == "mse":
+			loss = F.mse_loss(output_batch.squeeze(), label_batch.squeeze())
+		else:
+			print("Invalid loss function")
+			sys.exit(-1)
 
 	print("Val loss " + str(i) + " " + str(loss.data[0]))
 	return loss
