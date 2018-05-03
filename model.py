@@ -195,7 +195,7 @@ def test():
 			print("Invalid loss function")
 			sys.exit(-1)
 
-	print("Val loss " + str(i) + " " + str(loss.data[0]))
+	print("Val loss " +  str(loss.data[0]))
 	return loss
 
 for module in model.children():
