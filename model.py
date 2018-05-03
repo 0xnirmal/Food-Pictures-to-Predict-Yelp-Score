@@ -170,6 +170,8 @@ def train_epoch():
 		# print("Training step " + str(i) + ": " + str(loss.data.item()))
 		i += 1
 		loss_list.append(loss)
+		if i == 3:
+			break
 
 	total_loss = 0
 	for loss in loss_list:
@@ -183,20 +185,18 @@ def test():
 	model.eval()
 	i = 0
 	loss_list = []
-
 	for input_batch, label_batch in val_loader:
-		input_batch, label_batch = Variable(input_batch, requires_grad=False), Variable(label_batch, requires_grad=False)
+	
+		input_batch, label_batch = Variable(input_batch), Variable(label_batch)
 		if cuda_is_avail:
 			input_batch, label_batch = input_batch.cuda(), label_batch.cuda()
 		output_batch = model(input_batch)
 
-		if args.loss == "l1":
-			loss = F.l1_loss(output_batch.squeeze(), label_batch.squeeze())
-		elif args.loss == "mse":
-			loss = F.mse_loss(output_batch.squeeze(), label_batch.squeeze())
-		else:
-			print("Invalid loss function")
-			sys.exit(-1)
+		loss = torch.mean(torch.abs(output_batch.squeeze() - label_batch.squeeze()))
+
+		
+		print(str(i) + "," + str(loss.data.item()))
+		# print("Training step " + str(i) + ": " + str(loss.data.item()))
 		i += 1
 		loss_list.append(loss)
 
@@ -205,7 +205,6 @@ def test():
 		total_loss += loss
 	total_loss /= i
 
-	print("Val loss: " +  str(total_loss.data.item()))
 	return total_loss
 
 for module in model.children():
