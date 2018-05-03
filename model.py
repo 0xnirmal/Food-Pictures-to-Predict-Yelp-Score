@@ -251,6 +251,7 @@ for module in model.children():
 	module.reset_parameters()
 
 for i in range(args.epochs):
+	print("Epoch " + i)
 	train_loss, train_loss_list = train_epoch()
 	# val_loss, val_loss_list = test()
 
