@@ -187,7 +187,7 @@ def test():
 	loss_list = []
 	for input_batch, label_batch in val_loader:
 	
-		input_batch, label_batch = Variable(input_batch), Variable(label_batch)
+		input_batch, label_batch = Variable(input_batch, volatile=True), Variable(label_batch)
 		if cuda_is_avail:
 			input_batch, label_batch = input_batch.cuda(), label_batch.cuda()
 		output_batch = model(input_batch)
