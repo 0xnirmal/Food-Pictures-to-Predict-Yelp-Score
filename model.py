@@ -252,5 +252,5 @@ for module in model.children():
 
 for i in range(args.epochs):
 	train_loss, train_loss_list = train_epoch()
-	# val_loss = test()
+	val_loss, val_loss_list = test()
 
