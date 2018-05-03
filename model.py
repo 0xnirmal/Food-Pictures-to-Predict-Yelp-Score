@@ -169,9 +169,9 @@ def train_epoch():
 		print("Training step " + str(i) + ": " + str(loss.data.item()))
 		i += 1
 		loss_list.append(loss)
-		del loss, input_batch, label_batch 
-		if i == 3:
-			break
+		# del loss, input_batch, label_batch 
+		# if i == 3:
+		# 	break
 
 	total_loss = 0
 	for loss in loss_list:
@@ -252,5 +252,5 @@ for module in model.children():
 
 for i in range(args.epochs):
 	train_loss, train_loss_list = train_epoch()
-	val_loss, val_loss_list = test()
+	# val_loss, val_loss_list = test()
 
