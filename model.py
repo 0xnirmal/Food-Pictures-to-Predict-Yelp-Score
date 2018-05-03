@@ -237,8 +237,6 @@ def test():
 		# print("Training step " + str(i) + ": " + str(loss.data.item()))
 		i += 1
 		loss_list.append(loss)
-		if i == 3:
-			break
 
 	total_loss = 0
 	for loss in loss_list:
