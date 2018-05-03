@@ -87,17 +87,18 @@ class YelpDataset(torch.utils.data.Dataset):
 		label = self.df.iloc[idx].label
 		return (torch.Tensor(img), torch.Tensor([label]))
 
-biz_df = pd.read_csv(args.data_dir + "clean_business.csv").set_index("business_id")
-photo_df = pd.read_csv(args.data_dir + "clean_photo.csv").set_index("photo_id")
-df = photo_df.copy(deep=True)
-df["label"] = pd.Series(biz_df.loc[df["business_id"]]["stars"]).tolist()
-df = df.sample(frac=1)
+# biz_df = pd.read_csv(args.data_dir + "clean_business.csv").set_index("business_id")
+# photo_df = pd.read_csv(args.data_dir + "clean_photo.csv").set_index("photo_id")
+# df = photo_df.copy(deep=True)
+# df["label"] = pd.Series(biz_df.loc[df["business_id"]]["stars"]).tolist()
+# df = df.sample(frac=1)
+df = pd.read_csv(args.data_dir + "clean_data.csv").set_index("photo_id")
 
-# train_df = df.iloc[0:int(len(df) * 0.7)]
-# val_df = df.iloc[int(len(df) * 0.7):]
+train_df = df.iloc[0:int(len(df) * 0.7)]
+val_df = df.iloc[int(len(df) * 0.7):]
 
-val_df = df.iloc[0:3000]
-train_df = df.iloc[3000:10000]
+# val_df = df.iloc[0:3000]
+# train_df = df.iloc[3000:10000]
 
 
 train_dataset = YelpDataset(train_df)
@@ -209,6 +210,7 @@ def test():
 for module in model.children():
 	module.reset_parameters()
 
-train_loss, train_loss_list = train_epoch()
-val_loss = test()
+for i in range(args.epochs):
+	train_loss, train_loss_list = train_epoch()
+	val_loss = test()
 
