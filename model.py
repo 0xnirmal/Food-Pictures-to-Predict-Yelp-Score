@@ -248,7 +248,7 @@ for module in model.children():
 train_loss_list = []
 val_loss_list = []
 
-for i in range(2):
+for i in range(args.epochs):
 	print("Epoch " + str(i))
 	print("Training:")
 	train_loss, temp_train_loss_list = train_epoch()
@@ -257,8 +257,11 @@ for i in range(2):
 	val_loss, _ = test()
 	val_loss_list.append(val_loss)
 
-print(train_loss_list)
-print(val_loss_list)
+print("Training:")
+for idx, val in enumerate(train_loss_list):
+	print(idx + "," + val)
 
-
+print("Validation:")
+for idx, val in enumerate(val_loss_list):
+	print(idx + "," + val)
 
