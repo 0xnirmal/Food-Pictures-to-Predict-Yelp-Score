@@ -106,7 +106,7 @@ val_dataset = YelpDataset(val_df)
 train_loader = DataLoader(train_dataset, batch_size=args.batch_size,
                         shuffle=True, num_workers=2)
 
-val_loader = DataLoader(val_dataset, batch_size=len(val_dataset),
+val_loader = DataLoader(val_dataset, batch_size=1024,
                         shuffle=True, num_workers=2)
 
 
@@ -179,6 +179,8 @@ def train_epoch():
 def test():
 
 	model.eval()
+	i = 0
+	loss_list = []
 
 	for input_batch, label_batch in val_loader:
 		input_batch, label_batch = Variable(input_batch), Variable(label_batch)
@@ -193,9 +195,16 @@ def test():
 		else:
 			print("Invalid loss function")
 			sys.exit(-1)
+		i += 1
+		loss_list.append(loss)
 
-	print("Val loss: " +  str(loss.data.item()))
-	return loss
+	total_loss = 0
+	for loss in loss_list:
+		total_loss += loss
+	total_loss /= i
+
+	print("Val loss: " +  str(total_loss.data.item()))
+	return total_loss
 
 for module in model.children():
 	module.reset_parameters()
