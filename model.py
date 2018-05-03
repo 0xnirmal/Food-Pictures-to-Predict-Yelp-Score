@@ -168,7 +168,7 @@ def train_epoch():
 		# print(str(i) + "," + str(loss.data.item()))
 		print("Training step " + str(i) + ": " + str(loss.data.item()))
 		i += 1
-		loss_list.append(loss)
+		loss_list.append(loss.data.item())
 		# del loss, input_batch, label_batch 
 		# if i == 3:
 		# 	break
@@ -235,24 +235,22 @@ def test():
 		# # loss.backward()
 		# # optimizer.step()
 		print(str(i) + "," + str(loss.data.item()))
-		# print("Training step " + str(i) + ": " + str(loss.data.item()))
 		i += 1
-		# loss_list.append(loss)
-		del loss, input_batch, label_batch 
+		loss_list.append(loss.data.item())
 
-	# total_loss = 0
-	# for loss in loss_list:
-	# 	total_loss += loss
-	# total_loss /= i
+	total_loss = 0
+	for loss in loss_list:
+		total_loss += loss
+	total_loss /= i
 
-	# return total_loss, loss_list
-	return none
+	return total_loss, loss_list
 
 for module in model.children():
 	module.reset_parameters()
 
 for i in range(args.epochs):
 	print("Epoch " + str(i))
+	print("Training:")
 	train_loss, train_loss_list = train_epoch()
-	test()
+	val_loss, val_loss_list = test()
 
