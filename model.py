@@ -96,8 +96,8 @@ df = df.sample(frac=1)
 # train_df = df.iloc[0:int(len(df) * 0.7)]
 # val_df = df.iloc[int(len(df) * 0.7):]
 
-val_df = df.iloc[0:1000]
-train_df = df.iloc[1000:11000]
+val_df = df.iloc[0:3000]
+train_df = df.iloc[3000:11000]
 
 
 train_dataset = YelpDataset(train_df)
@@ -164,10 +164,8 @@ def train_epoch():
 		optimizer.zero_grad()
 		loss.backward()
 		optimizer.step()
-		print("Training step " + str(i) + " " + str(loss.data.item()))
+		print("Training step " + str(i) + ": " + str(loss.data.item()))
 		i += 1
-		if i == 10:
-			break
 		loss_list.append(loss)
 
 	total_loss = 0
@@ -195,7 +193,7 @@ def test():
 			print("Invalid loss function")
 			sys.exit(-1)
 
-	print("Val loss " +  str(loss.data.item()))
+	print("Val loss: " +  str(loss.data.item()))
 	return loss
 
 for module in model.children():
