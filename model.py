@@ -164,7 +164,7 @@ def train_epoch():
 		optimizer.zero_grad()
 		loss.backward()
 		optimizer.step()
-		print("Training step " + str(i) + " " + str(loss.data[0]))
+		print("Training step " + str(i) + " " + str(loss.data.item()))
 		i += 1
 		if i == 10:
 			break
@@ -195,7 +195,7 @@ def test():
 			print("Invalid loss function")
 			sys.exit(-1)
 
-	print("Val loss " +  str(loss.data[0]))
+	print("Val loss " +  str(loss.data.item()))
 	return loss
 
 for module in model.children():
