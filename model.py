@@ -125,9 +125,11 @@ class BasicNet(nn.Module):
 		x = self.fc2(x)
 		return x
 
-
+cuda_is_avail = torch.cuda.is_available()
 
 model = BasicNet()
+if cuda_is_avail:
+	model.cuda()
 optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
 
 
@@ -156,8 +158,9 @@ def train_epoch():
 	loss_list = []
 	for input_batch, label_batch in train_loader:
 	
-		input_batch = Variable(input_batch)
-		label_batch = Variable(label_batch)
+		input_batch, label_batch = Variable(input_batch), Variable(label_batch)
+		if cuda_is_avail:
+			input_batch, label_batch = input_batch.cuda(), label_batch.cuda()
 		output_batch = model(input_batch)
 
 		loss = F.l1_loss(output_batch, label_batch)
