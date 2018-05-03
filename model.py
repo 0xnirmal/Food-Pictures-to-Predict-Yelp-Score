@@ -181,7 +181,7 @@ def train_epoch():
 
 def test():
 
-	model.train()
+	model.eval()
 	i = 0
 	loss_list = []
 	for input_batch, label_batch in val_loader:
@@ -216,5 +216,5 @@ for module in model.children():
 
 for i in range(args.epochs):
 	train_loss, train_loss_list = train_epoch()
-	val_loss = test()
+	# val_loss = test()
 
