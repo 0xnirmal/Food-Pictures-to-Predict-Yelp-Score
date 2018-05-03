@@ -212,7 +212,7 @@ def train_epoch():
 # 	return total_loss
 
 def test():
-	model.train()
+	model.eval()
 	i = 0
 	loss_list = []
 	for input_batch, label_batch in val_loader:
@@ -231,8 +231,8 @@ def test():
 			sys.exit(-1)
 
 		optimizer.zero_grad()
-		loss.backward()
-		optimizer.step()
+		# loss.backward()
+		# optimizer.step()
 		print(str(i) + "," + str(loss.data.item()))
 		# print("Training step " + str(i) + ": " + str(loss.data.item()))
 		i += 1
