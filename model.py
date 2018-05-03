@@ -55,6 +55,8 @@ parser.add_argument('--print_log', action='store_true', default=False,
 					help='prints the csv log when training is complete')
 parser.add_argument('--dropout_rate', type=float, default=0.5)
 parser.add_argument("-f", "--jupyter-json")
+parser.add_argument('--loss', type=str, default='l1', metavar='LOSS',
+					help='l1, mse')
 
 
 
@@ -70,23 +72,19 @@ def resize_img(img):
 
 
 class YelpDataset(torch.utils.data.Dataset):
-	
-	def __init__(self, df, batch_size, shuffle=True):
+	def __init__(self, df):
 		self.df = df 
-		self.batch_size = batch_size
-		if shuffle:
-			self.df = self.df.sample(frac=1)
-		
+
 	def __len__(self):
 		return len(self.df)
 
 	def __getitem__(self, idx):
-		photo_names = self.df.iloc[idx:idx+self.batch_size].index.tolist()
-		file_names = [get_photo_file(photo_name) for photo_name in photo_names]
-		images = [io.imread(file_name) for file_name in file_names]
-		images = [resize_img(img) for img in images] 
-		label = self.df.iloc[idx:idx+self.batch_size].label.tolist()
-		return (torch.Tensor(images),torch.Tensor(label))
+		photo_name = self.df.iloc[idx].name
+		file_name = get_photo_file(photo_name)
+		img = io.imread(file_name)
+		img = resize_img(img) 
+		label = self.df.iloc[idx].label
+		return (torch.Tensor(img), torch.Tensor([label]))
 
 biz_df = pd.read_csv(args.data_dir + "clean_business.csv").set_index("business_id")
 photo_df = pd.read_csv(args.data_dir + "clean_photo.csv").set_index("photo_id")
@@ -101,12 +99,14 @@ val_df = df.iloc[0:1000]
 train_df = df.iloc[1000:11000]
 
 
-train_loader = YelpDataset(train_df, batch_size=args.batch_size)
-val_loader = YelpDataset(val_df, batch_size=len(val_df))
+train_dataset = YelpDataset(train_df)
+val_dataset = YelpDataset(val_df)
 
-val_img, val_label = val_loader[0]
-val_img = Variable(val_img)
-val_labeel = Variable(val_label)
+train_loader = dataloader = DataLoader(transformed_dataset, batch_size=args.batch_size,
+                        shuffle=True, num_workers=2)
+
+# val_img, val_label = val_loader[0]
+# val_img, val_label = Variable(val_img), Variable(val_label)
 
 
 class BasicNet(nn.Module):
@@ -136,24 +136,6 @@ if cuda_is_avail:
 optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
 
 
-
-def train_step(step):
-
-	model.train()
-
-	input_batch, label_batch = train_loader[step]
-	input_batch = Variable(input_batch)
-	label_batch = Variable(label_batch)
-	output_batch = model(input_batch)
-
-	loss = F.l1_loss(output_batch, label_batch)
-
-	optimizer.zero_grad()
-	loss.backward()
-	optimizer.step()
-
-	return loss.data[0]
-
 def train_epoch():
 	
 	model.train()
@@ -166,7 +148,13 @@ def train_epoch():
 			input_batch, label_batch = input_batch.cuda(), label_batch.cuda()
 		output_batch = model(input_batch)
 
-		loss = F.mse_loss(output_batch.squeeze(), label_batch)
+		if args.loss == "l1":
+			loss = F.l1_loss(output_batch.squeeze(), label_batch)
+		elif args.loss == "mse":
+			loss = F.mse_loss(output_batch.squeeze(), label_batch)
+		else:
+			print("Invalid loss function")
+			sys.exit(-1)
 
 		optimizer.zero_grad()
 		loss.backward()
@@ -174,9 +162,7 @@ def train_epoch():
 		print("Training step " + str(i) + " " + str(loss.data[0]))
 		i += 1
 		loss_list.append(loss)
-		if i == 129:
-			break
-	
+
 	total_loss = 0
 	for loss in loss_list:
 		total_loss += loss
@@ -189,5 +175,4 @@ for module in model.children():
 	module.reset_parameters()
 	
 avg_loss, loss_list = train_epoch()
-
 
