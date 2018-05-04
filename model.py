@@ -221,6 +221,7 @@ def train_autoencoder():
 	autoencoder.train()
 
 	for epoch in range(10):
+		i = 0
 		for input_batch, _ in train_loader:
 		
 			input_batch = Variable(input_batch)
@@ -235,6 +236,7 @@ def train_autoencoder():
 			loss.backward()
 			auto_optimizer.step()
 			print(str(i) + "," + str(loss.data.item()))
+			i += 1
 
 	return autoencoder.encoder
 
