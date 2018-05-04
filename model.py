@@ -226,6 +226,7 @@ class AutoBasicNet(nn.Module):
 		self.fc2 = nn.Linear(100, 1)
 
 	def forward(self, x):
+		print(x.shape)
 		x = F.relu(F.max_pool2d(self.conv1(x), 2))
 		x = F.relu(F.max_pool2d(self.conv2(x), 2))
 		print(x.shape)
