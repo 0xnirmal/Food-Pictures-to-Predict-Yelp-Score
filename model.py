@@ -174,18 +174,17 @@ elif args.model == "inter":
 	model = IntermediateNet()
 elif args.model == "pretrained":
 	m = models.resnet18(pretrained=True)
-	# m.cuda()
 	model = PreTrainedNet(m)
-	model.cuda();
 
 if cuda_is_avail:
+	if args.model == "pretrained":
+		m.cuda()
 	model.cuda()
 
 optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
 
 if args.model == "pretrained":
 	optimizer = torch.optim.SGD(model.final_linear.parameters(), lr=0.001)
-
 
 def train_epoch():
 
@@ -243,6 +242,7 @@ def test():
 		print(str(i) + "," + str(loss.data.item()))
 		i += 1
 		loss_list.append(loss.data.item())
+		del loss, input_batch, label_batch, output_batch
 
 	total_loss = 0
 	for loss in loss_list:
