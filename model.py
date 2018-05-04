@@ -160,6 +160,9 @@ if args.model == "basic":
 elif args.model = "inter"
 	model = IntermediateNet()
 
+print(args.model)
+print(model)
+
 if cuda_is_avail:
 	model.cuda()
 optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
