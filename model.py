@@ -136,8 +136,8 @@ class IntermediateNet(nn.Module):
 		self.bn2 = nn.BatchNorm2d(10)
 		self.conv2 = nn.Conv2d(10, 10, kernel_size=6)
 		self.bn3 = nn.BatchNorm2d(10)
-		self.fc1 = nn.Linear(3000, 128)
-		self.fc2 = nn.Linear(128, 1)
+		self.fc1 = nn.Linear(116640, 1024)
+		self.fc2 = nn.Linear(1024, 1)
 
 	def forward(self, x):
 		x = self.bn1(x)
@@ -158,9 +158,6 @@ if args.model == "basic":
 	model = BasicNet()
 elif args.model == "inter":
 	model = IntermediateNet()
-
-print(args.model)
-print(model)
 
 if cuda_is_avail:
 	model.cuda()
