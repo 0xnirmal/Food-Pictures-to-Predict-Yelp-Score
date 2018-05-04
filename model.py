@@ -47,11 +47,8 @@ parser.add_argument('--photos_dir', type=str, default='../HDD/photos/', metavar=
 parser.add_argument('--name', type=str, default='', metavar='N',
 					help="""A name for this training run, this
 							affects the directory so use underscores and not spaces.""")
-parser.add_argument('--model', type=str, default='default', metavar='M',
-					help="""Options are default, P2Q7DefaultChannelsNet,
-					P2Q7HalfChannelsNet, P2Q7DoubleChannelsNet,
-					P2Q8BatchNormNet, P2Q9DropoutNet, P2Q10DropoutBatchnormNet,
-					P2Q11ExtraConvNet, P2Q12RemoveLayerNet, and P2Q13UltimateNet.""")
+parser.add_argument('--model', type=str, default='basic', metavar='M',
+					help="""Options are basic, inter""")
 parser.add_argument('--print_log', action='store_true', default=False,
 					help='prints the csv log when training is complete')
 parser.add_argument('--dropout_rate', type=float, default=0.5)
@@ -85,7 +82,7 @@ class YelpDataset(torch.utils.data.Dataset):
 		img = io.imread(file_name)
 		img = resize_img(img) 
 		label = self.df.iloc[idx].label
-		return (torch.Tensor(img), torch.Tensor([label]))
+		return (torch.Tensor(img).permute(2, 0, 1), torch.Tensor([label]))
 
 # biz_df = pd.read_csv(args.data_dir + "clean_business.csv").set_index("business_id")
 # photo_df = pd.read_csv(args.data_dir + "clean_photo.csv").set_index("photo_id")
@@ -106,13 +103,9 @@ train_dataset = YelpDataset(train_df)
 val_dataset = YelpDataset(val_df)
 
 train_loader = DataLoader(train_dataset, batch_size=args.batch_size,
-                        shuffle=True, num_workers=2)
+						shuffle=True, num_workers=2)
 
 val_loader = DataLoader(val_dataset, batch_size=256, num_workers=2)
-
-
-# val_img, val_label = val_loader[0]
-# val_img, val_label = Variable(val_img), Variable(val_label)
 
 
 class BasicNet(nn.Module):
@@ -125,7 +118,7 @@ class BasicNet(nn.Module):
 		self.dropout_rate = dropout_rate
 
 	def forward(self, x):
-		x = x.permute(0, 3, 1, 2)
+		# x = x.permute(0, 3, 1, 2)
 		x = F.relu(F.max_pool2d(self.conv1(x), 2))
 		x = F.relu(F.max_pool2d(self.conv2(x), 2))
 		x = x.view(-1, 28090)
@@ -134,9 +127,39 @@ class BasicNet(nn.Module):
 		x = self.fc2(x)
 		return x
 
+
+class IntermediateNet(nn.Module):
+	def __init__(self):
+		super(IntermediateNet, self).__init__()
+		self.bn1 = nn.BatchNorm2d(1)
+		self.conv1 = nn.Conv2d(3, 10, kernel_size=3)
+		self.bn2 = nn.BatchNorm2d(10)
+		self.conv2 = nn.Conv2d(10, 10, kernel_size=6)
+		self.bn3 = nn.BatchNorm2d(10)
+		self.fc1 = nn.Linear(3000, 128)
+		self.fc2 = nn.Linear(128, 1)
+
+	def forward(self, x):
+		x = self.bn1(x)
+		x = self.bn2(F.relu(self.conv1(x)))
+		x = F.dropout(x, p=0.2, training=self.training)
+		x = self.bn3(F.relu(F.max_pool2d(self.conv2(x),2)))
+		x = F.dropout(x, p=0.3, training=self.training)
+		print(x.shape)
+		x = x.view(-1, 3000)
+
+		x = F.relu(self.fc1(x))
+		x = self.fc2(x)
+		return x
+
+
 cuda_is_avail = torch.cuda.is_available()
 
-model = BasicNet()
+if args.model == "basic":
+	model = BasicNet()
+elif args.model = "inter"
+	model = IntermediateNet()
+
 if cuda_is_avail:
 	model.cuda()
 optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
