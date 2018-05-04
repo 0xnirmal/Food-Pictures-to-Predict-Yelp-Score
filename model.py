@@ -251,8 +251,9 @@ def test():
 
 	return total_loss, loss_list
 
-for module in model.children():
-	module.reset_parameters()
+if args.model != "pretrained":
+	for module in model.children():
+		module.reset_parameters()
 
 train_loss_list = []
 val_loss_list = []
