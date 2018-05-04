@@ -46,7 +46,7 @@ parser.add_argument('--name', type=str, default='', metavar='N',
 					help="""A name for this training run, this
 							affects the directory so use underscores and not spaces.""")
 parser.add_argument('--model', type=str, default='basic', metavar='M',
-					help="""Options are basic, inter""")
+					help="""Options are basic, inter, pretrained, autoencoder""")
 parser.add_argument('--print_log', action='store_true', default=False,
 					help='prints the csv log when training is complete')
 parser.add_argument('--dropout_rate', type=float, default=0.5)
@@ -326,9 +326,9 @@ def test():
 	return total_loss, loss_list
 
 
-if args.model != "pretrained":
-	for module in model.children():
-		module.reset_parameters()
+# if args.model != "pretrained":
+# 	for module in model.children():
+# 		module.reset_parameters()
 
 train_loss_list = []
 val_loss_list = []
