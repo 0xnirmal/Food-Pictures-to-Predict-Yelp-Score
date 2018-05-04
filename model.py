@@ -145,8 +145,7 @@ class IntermediateNet(nn.Module):
 		x = F.dropout(x, p=0.2, training=self.training)
 		x = self.bn3(F.relu(F.max_pool2d(self.conv2(x),2)))
 		x = F.dropout(x, p=0.3, training=self.training)
-		print(x.shape)
-		x = x.view(-1, 3000)
+		x = x.view(-1, 116640)
 
 		x = F.relu(self.fc1(x))
 		x = self.fc2(x)
