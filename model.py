@@ -165,7 +165,6 @@ class PreTrainedNet(nn.Module):
 		x = self.final_linear(x)
 		return x
 
-
 cuda_is_avail = torch.cuda.is_available()
 
 if args.model == "basic":
@@ -185,6 +184,59 @@ optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
 
 if args.model == "pretrained":
 	optimizer = torch.optim.SGD(model.final_linear.parameters(), lr=0.001)
+
+class AutoEncoder(nn.Module):
+	def __init__(self):
+		super(AutoEncoder, self).__init__()
+		self.encoder = nn.Sequential(
+			nn.Conv2d(1, 16, 3, stride=3, padding=1),  # b, 16, 10, 10
+			nn.ReLU(True),
+			nn.MaxPool2d(2, stride=2),  # b, 16, 5, 5
+			nn.Conv2d(16, 8, 3, stride=2, padding=1),  # b, 8, 3, 3
+			nn.ReLU(True),
+			nn.MaxPool2d(2, stride=1)  # b, 8, 2, 2
+		)
+		self.decoder = nn.Sequential(
+			nn.ConvTranspose2d(8, 16, 3, stride=2),  # b, 16, 5, 5
+			nn.ReLU(True),
+			nn.ConvTranspose2d(16, 8, 5, stride=3, padding=1),  # b, 8, 15, 15
+			nn.ReLU(True),
+			nn.ConvTranspose2d(8, 1, 2, stride=2, padding=1),  # b, 1, 28, 28
+			nn.Tanh()
+		)
+
+	def forward(self, x):
+		x = self.encoder(x)
+		x = self.decoder(x)
+		return x
+
+def train_autoencoder():
+
+	autoencoder = AutoEncoder()
+	if cuda_is_avail:
+		autoencoder.cuda()
+
+	auto_optimizer = torch.optim.SGD(autoencoder.parameters(), lr=0.001)
+
+	autoencoder.train()
+
+	for epoch in range(10):
+		for input_batch, _ in train_loader:
+		
+			input_batch = Variable(input_batch)
+			if cuda_is_avail:
+				input_batch = input_batch.cuda()
+
+			output_batch = autoencoder(input_batch)
+
+			loss = F.mse_loss(output_batch, input_batch)
+
+			auto_optimizer.zero_grad()
+			loss.backward()
+			auto_optimizer.step()
+			print(str(i) + "," + str(loss.data.item()))
+
+	return autoencoder.encoder
 
 def train_epoch():
 
@@ -250,6 +302,10 @@ def test():
 	total_loss /= i
 
 	return total_loss, loss_list
+
+print("Getting into autoencoder function")
+train_autoencoder()
+print("Getting out of autoencoder function")
 
 if args.model != "pretrained":
 	for module in model.children():
