@@ -150,7 +150,7 @@ def train_autoencoder():
 			print(str(i) + "," + str(loss.data.item()))
 			i += 1
 
-			return autoencoder.encoder
+	return autoencoder.encoder
 
 class BasicNet(nn.Module):
 	def __init__(self, dropout_rate=0.5):
@@ -226,9 +226,7 @@ class AutoBasicNet(nn.Module):
 		self.fc2 = nn.Linear(100, 1)
 
 	def forward(self, x):
-		# print(x.shape)
 		x = self.encoder(x)
-		# print(x.shape)
 		x = F.relu(F.max_pool2d(self.conv1(x), 2))
 		x = F.relu(F.max_pool2d(self.conv2(x), 2))
 		# print(x.shape)
@@ -249,7 +247,7 @@ elif args.model == "pretrained":
 elif args.model == "autoencoder":
 	print("Getting into autoencoder function")
 	encoder = train_autoencoder()
-	print("Getting into autoencoder function")
+	print("Getting out of autoencoder function")
 	model = AutoBasicNet(encoder)
 
 if cuda_is_avail:
