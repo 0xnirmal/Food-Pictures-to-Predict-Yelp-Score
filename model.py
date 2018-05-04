@@ -157,7 +157,7 @@ cuda_is_avail = torch.cuda.is_available()
 
 if args.model == "basic":
 	model = BasicNet()
-elif args.model = "inter"
+elif args.model == "inter"
 	model = IntermediateNet()
 
 print(args.model)
