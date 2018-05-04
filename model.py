@@ -1,6 +1,3 @@
-# !conda install --yes --prefix {sys.prefix} scikit-image
-# !pip3 install scikit-image
-
 import sys
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -56,18 +53,14 @@ parser.add_argument("-f", "--jupyter-json")
 parser.add_argument('--loss', type=str, default='l1', metavar='LOSS',
 					help='l1, mse')
 
-
-
 required = object()
 args = parser.parse_args()
-
 
 def get_photo_file(photo_name):
 	return args.photos_dir + photo_name + ".jpg"
 
 def resize_img(img):
 	return transform.resize(img, (224, 224))
-
 
 class YelpDataset(torch.utils.data.Dataset):
 	def __init__(self, df):
@@ -84,19 +77,12 @@ class YelpDataset(torch.utils.data.Dataset):
 		label = self.df.iloc[idx].label
 		return (torch.Tensor(img).permute(2, 0, 1), torch.Tensor([label]))
 
-# biz_df = pd.read_csv(args.data_dir + "clean_business.csv").set_index("business_id")
-# photo_df = pd.read_csv(args.data_dir + "clean_photo.csv").set_index("photo_id")
-# df = photo_df.copy(deep=True)
-# df["label"] = pd.Series(biz_df.loc[df["business_id"]]["stars"]).tolist()
-# df = df.sample(frac=1)
+
 df = pd.read_csv(args.data_dir + "clean_data.csv").set_index("photo_id")
 df = df.sample(frac=1)
 
 train_df = df.iloc[0:int(len(df) * 0.7)]
 val_df = df.iloc[int(len(df) * 0.7):]
-
-# val_df = df.iloc[0:3000]
-# train_df = df.iloc[3000:10000]
 
 
 train_dataset = YelpDataset(train_df)
@@ -104,9 +90,7 @@ val_dataset = YelpDataset(val_df)
 
 train_loader = DataLoader(train_dataset, batch_size=args.batch_size,
 						shuffle=True, num_workers=2)
-
 val_loader = DataLoader(val_dataset, batch_size=256, num_workers=2)
-
 
 class BasicNet(nn.Module):
 	def __init__(self, dropout_rate=0.5):
@@ -126,7 +110,6 @@ class BasicNet(nn.Module):
 		x = F.dropout(x, p=self.dropout_rate, training=self.training)
 		x = self.fc2(x)
 		return x
-
 
 class IntermediateNet(nn.Module):
 	def __init__(self):
@@ -188,12 +171,8 @@ def train_epoch():
 		loss.backward()
 		optimizer.step()
 		print(str(i) + "," + str(loss.data.item()))
-		# print("Training step " + str(i) + ": " + str(loss.data.item()))
 		i += 1
 		loss_list.append(loss.data.item())
-		# del loss, input_batch, label_batch 
-		# if i == 3:
-		# 	break
 
 	total_loss = 0
 	for loss in loss_list:
@@ -201,38 +180,6 @@ def train_epoch():
 	total_loss /= i
 
 	return total_loss, loss_list
-
-# def test():
-
-# 	model.eval()
-# 	i = 0
-# 	loss_list = []
-# 	for input_batch, label_batch in val_loader:
-	
-# 		input_batch, label_batch = Variable(input_batch, volatile=True), Variable(label_batch)
-# 		if cuda_is_avail:
-# 			input_batch, label_batch = input_batch.cuda(), label_batch.cuda()
-# 		output_batch = model(input_batch)
-
-# 		if args.loss == "l1":
-# 			loss = F.l1_loss(output_batch.squeeze(), label_batch.squeeze())
-# 		elif args.loss == "mse":
-# 			loss = F.mse_loss(output_batch.squeeze(), label_batch.squeeze())
-# 		else:
-# 			print("Invalid loss function")
-# 			sys.exit(-1)
-		
-# 		print(str(i) + "," + str(loss.data.item()))
-# 		# print("Training step " + str(i) + ": " + str(loss.data.item()))
-# 		i += 1
-# 		loss_list.append(loss)
-
-# 	total_loss = 0
-# 	for loss in loss_list:
-# 		total_loss += loss
-# 	total_loss /= i
-
-# 	return total_loss
 
 def test():
 	model.eval()
