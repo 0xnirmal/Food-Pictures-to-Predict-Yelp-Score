@@ -12,6 +12,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
+from torchvision import models
 import argparse
 
 
@@ -63,8 +64,9 @@ def resize_img(img):
 	return transform.resize(img, (224, 224))
 
 class YelpDataset(torch.utils.data.Dataset):
-	def __init__(self, df):
+	def __init__(self, df, transform=None):
 		self.df = df 
+		self.transform = transform
 
 	def __len__(self):
 		return len(self.df)
@@ -73,9 +75,11 @@ class YelpDataset(torch.utils.data.Dataset):
 		photo_name = self.df.iloc[idx].name
 		file_name = get_photo_file(photo_name)
 		img = io.imread(file_name)
-		img = resize_img(img) 
-		label = self.df.iloc[idx].label
-		return (torch.Tensor(img).permute(2, 0, 1), torch.Tensor([label]))
+		img = torch.Tensor(resize_img(img)).permute(2, 0, 1) 
+		label = torch.Tensor([self.df.iloc[idx].label])
+		if self.transform is not None:
+			img = self.transform(img)
+		return (img, label)
 
 
 df = pd.read_csv(args.data_dir + "clean_data.csv").set_index("photo_id")
@@ -84,9 +88,13 @@ df = df.sample(frac=1)
 train_df = df.iloc[0:int(len(df) * 0.7)]
 val_df = df.iloc[int(len(df) * 0.7):]
 
+normalize = None
+if args.model == "pretrained":
+	normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], 
+		std=[0.229, 0.224, 0.225])
 
-train_dataset = YelpDataset(train_df)
-val_dataset = YelpDataset(val_df)
+train_dataset = YelpDataset(train_df, transform=normalize)
+val_dataset = YelpDataset(val_df, transform=normalize)
 
 train_loader = DataLoader(train_dataset, batch_size=args.batch_size,
 						shuffle=True, num_workers=2)
@@ -134,6 +142,29 @@ class IntermediateNet(nn.Module):
 		x = self.fc2(x)
 		return x
 
+class PreTrainedNet(nn.Module):
+	def __init__(self, orig_resnet):
+		super().__init__()
+		self.orig_resnet = orig_resnet
+		self.final_linear = torch.nn.Linear(512, 1)
+
+	def forward(self, x):
+		x = self.orig_resnet.conv1(x)
+		x = self.orig_resnet.bn1(x)
+		x = self.orig_resnet.relu(x)
+		x = self.orig_resnet.maxpool(x)
+
+		x = self.orig_resnet.layer1(x)
+		x = self.orig_resnet.layer2(x)
+		x = self.orig_resnet.layer3(x)
+		x = self.orig_resnet.layer4(x)
+
+		x = self.orig_resnet.avgpool(x)
+		x = x.view(x.size(0), -1)
+
+		x = self.final_linear(x)
+		return x
+
 
 cuda_is_avail = torch.cuda.is_available()
 
@@ -141,10 +172,19 @@ if args.model == "basic":
 	model = BasicNet()
 elif args.model == "inter":
 	model = IntermediateNet()
+elif args.model == "pretrained":
+	m = models.resnet18(pretrained=True)
+	m.cuda()
+	model = PreTrainedNet(m)
+	model.cuda();
 
 if cuda_is_avail:
 	model.cuda()
+
 optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
+
+if args.model == "pretrained":
+	optimizer = torch.optim.SGD(model.final_linear.parameters(), lr=0.001)
 
 
 def train_epoch():
