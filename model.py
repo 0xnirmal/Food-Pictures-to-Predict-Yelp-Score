@@ -131,7 +131,7 @@ class BasicNet(nn.Module):
 class IntermediateNet(nn.Module):
 	def __init__(self):
 		super(IntermediateNet, self).__init__()
-		self.bn1 = nn.BatchNorm2d(1)
+		self.bn1 = nn.BatchNorm2d(3)
 		self.conv1 = nn.Conv2d(3, 10, kernel_size=3)
 		self.bn2 = nn.BatchNorm2d(10)
 		self.conv2 = nn.Conv2d(10, 10, kernel_size=6)
