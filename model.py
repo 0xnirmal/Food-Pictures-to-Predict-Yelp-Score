@@ -222,16 +222,16 @@ class AutoBasicNet(nn.Module):
 		self.encoder = encoder
 		self.conv1 = nn.Conv2d(8, 30, kernel_size=2)
 		self.conv2 = nn.Conv2d(30, 10, kernel_size=3)
-		self.fc1 = nn.Linear(28090, 100)
+		self.fc1 = nn.Linear(640, 100)
 		self.fc2 = nn.Linear(100, 1)
 
 	def forward(self, x):
-		print(x.shape)
+		# print(x.shape)
 		x = self.encoder(x)
-		print(x.shape)
+		# print(x.shape)
 		x = F.relu(F.max_pool2d(self.conv1(x), 2))
 		x = F.relu(F.max_pool2d(self.conv2(x), 2))
-		print(x.shape)
+		# print(x.shape)
 		x = x.view(-1, 28090)
 		x = F.relu(self.fc1(x))
 		x = self.fc2(x)
