@@ -201,7 +201,7 @@ class AutoEncoder(nn.Module):
 			nn.ReLU(True),
 			nn.ConvTranspose2d(16, 8, 5, stride=3, padding=1),  # b, 8, 15, 15
 			nn.ReLU(True),
-			nn.ConvTranspose2d(8, 3, 2, stride=2, padding=1),  # b, 1, 28, 28
+			nn.ConvTranspose2d(8, 3, 2, stride=3, padding=1),  # b, 1, 28, 28
 			nn.Tanh()
 		)
 
