@@ -174,7 +174,7 @@ elif args.model == "inter":
 	model = IntermediateNet()
 elif args.model == "pretrained":
 	m = models.resnet18(pretrained=True)
-	m.cuda()
+	# m.cuda()
 	model = PreTrainedNet(m)
 	model.cuda();
 
