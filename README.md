@@ -1,10 +1,8 @@
 # Food: It’s all about presentation? A deep learning approach to predicting Yelp ratings using photos of food
 
-## Nirmal Krishnan 
+## Nirmal Krishnan
 
-## May 5, 2018
-
-## This markdown was scraped from the report.pdf using http://pdf2md.morethan.io/. See report.pdf for figures and proper formatting
+### This markdown was scraped from the report.pdf using http://pdf2md.morethan.io/. See report.pdf for figures and proper formatting
 
 ## Abstract
 
