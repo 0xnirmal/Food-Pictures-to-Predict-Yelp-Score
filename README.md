@@ -4,6 +4,8 @@
 
 ## May 5, 2018
 
+## This markdown was scraped from the report.pdf using http://pdf2md.morethan.io/. See report.pdf for figures and proper formatting
+
 ## Abstract
 
 This project aims to use deep learning methods for predicting a restaurant’s overall rating based
@@ -131,12 +133,8 @@ inal image. L2 loss is then minimized between the original image and the image p
 decoder. We trained our autoencoder for 10 epochs, which admittedly may be too few but com-
 putational resources induced a bottleneck. After the 10 epochs, we trained a CNN similar to basic
 net on the compressed representation outputted by the encoder that predicted yelp star ratings
-for the corresponding photo. The model for the autoencoder can be seen below:
+for the corresponding photo. 
 
-
-```
-The CNN trained using the outputs from the encoder can be found below:
-```
 ## 3 Results
 
 ### 3.1 Experimental Setup
