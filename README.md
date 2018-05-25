@@ -87,6 +87,8 @@ layers with relu activations after each layer except the final. The hyper-parame
 lutional net, including output channel size, kernel, stride, and padding were explored thoroughly
 and the following model setup generated the best results:
 
+![f1]
+
 ### 2.5 Intermediate Net
 
 After we established a baseline with BasicNet, we decided to improve upon this net by including
@@ -103,6 +105,9 @@ were explored in detail.
 
 
 The model setup for Intermediate Net (sans functional dropout layers) can be seen below:
+
+![f2]
+
 
 ### 2.6 Pretrained Net
 
@@ -133,7 +138,12 @@ inal image. L2 loss is then minimized between the original image and the image p
 decoder. We trained our autoencoder for 10 epochs, which admittedly may be too few but com-
 putational resources induced a bottleneck. After the 10 epochs, we trained a CNN similar to basic
 net on the compressed representation outputted by the encoder that predicted yelp star ratings
-for the corresponding photo. 
+for the corresponding photo. The model for the autoencoder can be seen below:
+
+![f3]
+
+The CNN trained using the outputs from the encoder can be found below:
+![f4]
 
 ## 3 Results
 
@@ -162,6 +172,10 @@ validation loss tracked at the end of each epoch. Since this is regression data,
 loss terms are the same (L1 loss is equivalent to RMSE).
 
 ### Performance
+
+![f5]
+
+![f6]
 
 
 ```
@@ -214,5 +228,13 @@ but photos of restaurants are included in the Yelp dataset and it would be inter
 3. Dropout: A Simple Way to Prevent Neural Networks from Overfitting
 4. Deep Residual Learning for Image Recognition
 5. Computer Vision for Food Cost Classification
+
+[f1]: https://github.com/nkrishn9/DL-Final-Project/blob/master/screenshots/fig1.png
+[f2]: https://github.com/nkrishn9/DL-Final-Project/blob/master/screenshots/fig2.png
+[f3]: https://github.com/nkrishn9/DL-Final-Project/blob/master/screenshots/fig3.png
+[f4]: https://github.com/nkrishn9/DL-Final-Project/blob/master/screenshots/fig4.png
+[f5]: https://github.com/nkrishn9/DL-Final-Project/blob/master/screenshots/fig5.png
+[f6]: https://github.com/nkrishn9/DL-Final-Project/blob/master/screenshots/fig6.png
+
 
 
